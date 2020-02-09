@@ -34,11 +34,10 @@ with ZipFile(filename) as zip_file:
     save_name = "{}.xml".format(Path(filename).stem)
 
     try:
-        save_handle = BytesIO(files[save_name])
+        tree = etree.parse(BytesIO(files[save_name]))
     except KeyError:
         raise KeyError("Could not find save file {}".format(save_name))
 
-    tree = etree.parse(save_handle)
 
     entries = tree.xpath(
         "/GameSave/m_entityListHiringManager/m_entities/EntitySave"
@@ -79,9 +78,11 @@ with ZipFile(filename) as zip_file:
                 m_hidden = etree.SubElement(perk, "m_hidden")
                 m_hidden.text = "false"
 
-    tree.write(save_handle)
+    out_handle = BytesIO()
 
-    files[save_name] = save_handle.getbuffer()
+    tree.write(out_handle, xml_declaration=True, encoding="utf-8")
+
+    files[save_name] = out_handle.getbuffer()
 
 remove(filename)
 
