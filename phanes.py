@@ -28,15 +28,18 @@ with ZipFile(filename) as zip_file:
 
     for entity in entries:
         # Component system:type="EmployeeComponentPersistentData"
-        skills = entity.xpath(
-            "Components/Component[@system:type='EmployeeComponentPersistentData']/m_skillSet/m_qualifications/Skill/m_level",
+        skillsets = entity.xpath(
+            "Components/Component[@system:type='EmployeeComponentPersistentData']/m_skillSet",
             namespaces={
                 "system": "http://www.w3.org/2001/XMLSchema-instance"
             }
         )
 
-        for skill in skills:
-            skill.text = "{}".format(5)
+        for skillset in skillsets:
+            skills = skillset.xpath("m_qualifications/Skill/m_level|m_specialization1/m_level|m_specialization2/m_level")
+
+            for skill in skills:
+                skill.text = "{}".format(5)
 
     tree.write(save_handle)
 
