@@ -54,6 +54,26 @@ with ZipFile(filename) as zip_file:
 
         for employee in employees:
 
+            salaries = employee.xpath("m_salary")
+
+            for salary in salaries:
+                salary.text = "{}".format(0)
+
+            salaries_hired = employee.xpath("m_hiredSalaryRandomization")
+
+            for salary in salaries_hired:
+                salary.text = "{}".format(0)
+
+            levels = employee.xpath("m_level")
+
+            for level in levels:
+                level.text = "{}".format(1)
+
+            levels_hired = employee.xpath("m_hiredLevel")
+
+            for level in levels_hired:
+                level.text = "{}".format(1)
+
             skillsets = employee.xpath("m_skillSet")
 
             for skillset in skillsets:
