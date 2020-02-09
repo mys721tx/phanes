@@ -40,43 +40,49 @@ with ZipFile(filename) as zip_file:
 
 
     entries = tree.xpath(
-        "/GameSave/m_entityListHiringManager/m_entities/EntitySave"
+        "/GameSave/m_floorPersistentData/FloorPersistentData/m_entityList/m_entities/EntitySave"
     )
 
     for entity in entries:
         # Component system:type="EmployeeComponentPersistentData"
-        skillsets = entity.xpath(
-            "Components/Component[@system:type='EmployeeComponentPersistentData']/m_skillSet",
+        employees = entity.xpath(
+            "Components/Component[@system:type='EmployeeComponentPersistentData']",
             namespaces={
                 "system": "http://www.w3.org/2001/XMLSchema-instance"
             }
         )
 
-        for skillset in skillsets:
-            skills = skillset.xpath("m_qualifications/Skill/m_level|m_specialization1/m_level|m_specialization2/m_level")
+        for employee in employees:
 
-            for skill in skills:
-                skill.text = "{}".format(5)
+            skillsets = employee.xpath("m_skillSet")
 
-        perksets = entity.xpath(
-            "Components/Component[@system:type='PerkSet']/m_perks",
-            namespaces={
-                "system": "http://www.w3.org/2001/XMLSchema-instance"
-            }
-        )
+            for skillset in skillsets:
+                skills = skillset.xpath(
+                    "m_qualifications/Skill/m_level|m_specialization1/m_level|m_specialization2/m_level"
+                )
 
-        for perkset in perksets:
+                for skill in skills:
+                    skill.text = "{}".format(5)
 
-            for child in perkset.iterchildren():
-                perkset.remove(child)
+            perksets = entity.xpath(
+                "Components/Component[@system:type='PerkSet']/m_perks",
+                namespaces={
+                    "system": "http://www.w3.org/2001/XMLSchema-instance"
+                }
+            )
 
-            for trait in TRAITS:
-                perk = etree.SubElement(perkset, "Perk")
-                m_perk = etree.SubElement(perk, "m_perk")
-                pointer = etree.SubElement(m_perk, "GameDBPointer", ID=trait)
+            for perkset in perksets:
 
-                m_hidden = etree.SubElement(perk, "m_hidden")
-                m_hidden.text = "false"
+                for child in perkset.iterchildren():
+                    perkset.remove(child)
+
+                for trait in TRAITS:
+                    perk = etree.SubElement(perkset, "Perk")
+                    m_perk = etree.SubElement(perk, "m_perk")
+                    pointer = etree.SubElement(m_perk, "GameDBPointer", ID=trait)
+
+                    m_hidden = etree.SubElement(perk, "m_hidden")
+                    m_hidden.text = "false"
 
     out_handle = BytesIO()
 
