@@ -7,6 +7,24 @@ from lxml import etree
 
 filename = "test.zip"
 
+TRAITS = [
+    "PERK_CHEMIST",
+    "PERK_CLEAN_FEET",
+    "PERK_COMFORTING",
+    "PERK_DIAGNOSTIC_GENIUS",
+    "PERK_FAST",
+    "PERK_FAST_LEARNER",
+    "PERK_GOOD_BOSS",
+    "PERK_HARD_WORKER",
+    "PERK_LOYAL",
+    "PERK_PEOPLE_PERSON",
+    "PERK_PLEASANT",
+    "PERK_PRACTICAL_DIAGNOSES",
+    "PERK_RESTZISTANCE",
+    "PERK_SCHOLAR",
+    "PERK_SPARTAN"
+]
+
 with ZipFile(filename) as zip_file:
 
     files = {
@@ -40,6 +58,26 @@ with ZipFile(filename) as zip_file:
 
             for skill in skills:
                 skill.text = "{}".format(5)
+
+        perksets = entity.xpath(
+            "Components/Component[@system:type='PerkSet']/m_perks",
+            namespaces={
+                "system": "http://www.w3.org/2001/XMLSchema-instance"
+            }
+        )
+
+        for perkset in perksets:
+
+            for child in perkset.iterchildren():
+                perkset.remove(child)
+
+            for trait in TRAITS:
+                perk = etree.SubElement(perkset, "Perk")
+                m_perk = etree.SubElement(perk, "m_perk")
+                pointer = etree.SubElement(m_perk, "GameDBPointer", ID=trait)
+
+                m_hidden = etree.SubElement(perk, "m_hidden")
+                m_hidden.text = "false"
 
     tree.write(save_handle)
 
