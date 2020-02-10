@@ -67,12 +67,17 @@ with ZipFile(filename) as zip_file:
             levels = employee.xpath("m_level")
 
             for level in levels:
-                level.text = "{}".format(1)
+                level.text = "{}".format(2)
 
             levels_hired = employee.xpath("m_hiredLevel")
 
             for level in levels_hired:
                 level.text = "{}".format(1)
+
+            flags_levelup = employee.xpath("m_leveledUpAfterHire")
+
+            for flag in flags_levelup:
+                flag.text = "true"
 
             skillsets = employee.xpath("m_skillSet")
 
@@ -103,6 +108,24 @@ with ZipFile(filename) as zip_file:
 
                     m_hidden = etree.SubElement(perk, "m_hidden")
                     m_hidden.text = "false"
+
+        infos_char = entity.xpath(
+            "Components/Component[@system:type='CharacterPersonalInfo']",
+            namespaces={
+                "system": "http://www.w3.org/2001/XMLSchema-instance"
+            }
+        )
+
+        for info in infos_char:
+            ages = info.xpath("m_age")
+
+            for age in ages:
+                age.text = "{}".format(23)
+
+            cats_age = info.xpath("m_ageCategory/GameDBPointer")
+
+            for cat_age in cats_age:
+                cat_age.attrib["ID"] = "AGE_YOUNG"
 
     out_handle = BytesIO()
 
